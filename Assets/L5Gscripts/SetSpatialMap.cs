@@ -8,13 +8,13 @@ public class SetSpatialMap : MonoBehaviour
     public GameObject PinkCube;
     public GameObject DisplayWorld;
 
-    public Material White;
-    public Material Trans;
+    //public Material White;
+    //public Material Trans;
     // Start is called before the first frame update
     
     public void ChangeWorldColor()
     {
-        DisplayWorld.GetComponent<Renderer>().material = Trans;
+        DisplayWorld.layer = 15; //layerを15 minimapに変更する
         Debug.Log("pi!");
     }
 

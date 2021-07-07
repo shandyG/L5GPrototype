@@ -13,6 +13,9 @@ public class KeywordTest : MonoBehaviour
     public GameObject refObj;
     public GameObject fukidashiObj;
     public GameObject minimapObj;
+
+    string objectName;
+    string explainMessage;
     TargetTracking script;
     ChangeAgentText CAscript;
 
@@ -20,13 +23,16 @@ public class KeywordTest : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        keywords = new string[6][];
+        keywords = new string[9][];
         keywords[0] = new string[] { "ゆにてぃちゃん", "ゆにてぃ" };//ひらがなでもカタカナでもいい
         keywords[1] = new string[] { "マップ", "ちず" };
         keywords[2] = new string[] { "おすすめ", "どこいけば" };
         keywords[3] = new string[] { "あんない", "あんないして" };
         keywords[4] = new string[] { "せつめい", "ここはなに" };
         keywords[5] = new string[] { "ありがとう", "もういいよ" };
+        keywords[6] = new string[] { "たかしお", "せんせい" };
+        keywords[7] = new string[] { "えすいちまるさん", "けんきゅうしつ" };
+        keywords[8] = new string[] { "といれ", "おてあらい" };
 
 
         keyCon = new KeywordController(keywords, true);//keywordControllerのインスタンスを作成
@@ -72,10 +78,66 @@ public class KeywordTest : MonoBehaviour
             keyCon.hasRecognized[2] = false;
             keyCon.StopRecognizing(1);
             keyCon.StopRecognizing(2);
-            keyCon.StartRecognizing(3);
+            keyCon.StartRecognizing(6);
+            keyCon.StartRecognizing(7);
+            keyCon.StartRecognizing(8);
 
-            CAscript.ChangeText("高汐先生の部屋かトイレかな");
+            CAscript.ChangeText("高汐先生の部屋か研究室かな");
         }
+
+        //recognized6-8の処理は変更します
+
+        if (keyCon.hasRecognized[6])// choose destination 認識した場所を設定する 
+        {
+            Debug.Log("destination recognized");
+            keyCon.hasRecognized[6] = false;
+            keyCon.StopRecognizing(1);
+            keyCon.StopRecognizing(2);
+            keyCon.StartRecognizing(3);
+            keyCon.StopRecognizing(6);
+            keyCon.StopRecognizing(7);
+            keyCon.StopRecognizing(8);
+
+            objectName = "TakashioRoom";
+            explainMessage = "高汐先生の今期の講義は月火でした";
+
+            CAscript.ChangeText("案内する？");
+        }
+
+        if (keyCon.hasRecognized[7])// choose destination 認識した場所を設定する 
+        {
+            Debug.Log("destination recognized");
+            keyCon.hasRecognized[7] = false;
+            keyCon.StopRecognizing(1);
+            keyCon.StopRecognizing(2);
+            keyCon.StartRecognizing(3);
+            keyCon.StopRecognizing(6);
+            keyCon.StopRecognizing(7);
+            keyCon.StopRecognizing(8);
+
+            objectName = "Laboratory";
+            explainMessage = "ラボメンが日々活動している部屋";
+
+            CAscript.ChangeText("案内する？");
+        }
+
+        if (keyCon.hasRecognized[8])// choose destination 認識した場所を設定する 
+        {
+            Debug.Log("destination recognized");
+            keyCon.hasRecognized[8] = false;
+            keyCon.StopRecognizing(1);
+            keyCon.StopRecognizing(2);
+            keyCon.StartRecognizing(3);
+            keyCon.StopRecognizing(6);
+            keyCon.StopRecognizing(7);
+            keyCon.StopRecognizing(8);
+
+            objectName = "Toilet";
+            explainMessage = "トイレはココ！";
+
+            CAscript.ChangeText("案内する？");
+        }
+
         if (keyCon.hasRecognized[3])//guide 案内する
         {
             Debug.Log("keyword[3] was recognized");
@@ -85,7 +147,7 @@ public class KeywordTest : MonoBehaviour
 
             script.GuideStart();
             fukidashiObj.SetActive(false);
-            script.SetDestination();
+            script.SetDestination(objectName);
         }
         if (keyCon.hasRecognized[4])//explain 説明する
         {
@@ -94,7 +156,7 @@ public class KeywordTest : MonoBehaviour
             keyCon.StopRecognizing(4);
 
             fukidashiObj.SetActive(true);
-            CAscript.ChangeText("Kaz-san is Here");
+            CAscript.ChangeText(explainMessage);
 
             script.ShowFaceToMaster();
         }

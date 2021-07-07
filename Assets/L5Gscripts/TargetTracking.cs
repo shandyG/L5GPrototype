@@ -19,6 +19,7 @@ public class TargetTracking : MonoBehaviour
     bool WalkFree = true;
     bool LeadOn = false;
     bool ShowFace = false;
+    string objectName = "Toilet";
 
     // Start is called before the first frame update
     void Start()
@@ -66,17 +67,19 @@ public class TargetTracking : MonoBehaviour
             StopDestination();
         }
         else
-        {    
-            SetDestination();
-            Debug.Log("false");
+        {
+            Debug.Log("false"); 
+            SetDestination(objectName);
         }
         
     }
 
-    public void SetDestination() //targetの位置へ移動
+    public void SetDestination(string name) //targetの位置へ移動
     {
         if (LeadOn)
         {
+            objectName = name;
+            target = GameObject.Find(name);
             var endPoint = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
             agent.destination = endPoint;
         }
