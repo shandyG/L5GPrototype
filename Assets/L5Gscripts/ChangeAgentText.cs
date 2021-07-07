@@ -2,12 +2,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-using TMPro;
-
 public class ChangeAgentText : MonoBehaviour
 {
 
-	public TextMeshProUGUI text;
+	public Text text;
 
 	// Use this for initialization
 	void Start()
@@ -20,6 +18,7 @@ public class ChangeAgentText : MonoBehaviour
 	public void ChangeText(string message)
     {
 		text.text = message;
+		Debug.Log(message);
 	}
 
 			

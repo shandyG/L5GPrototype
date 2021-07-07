@@ -17,6 +17,8 @@ public class TargetTracking : MonoBehaviour
     public GameObject master;
     ReactiveProperty<bool> distanceFar = new ReactiveProperty<bool>(false); //unirxによる値の監視
     bool WalkFree = true;
+    bool LeadOn = false;
+    bool ShowFace = false;
 
     // Start is called before the first frame update
     void Start()
@@ -36,17 +38,31 @@ public class TargetTracking : MonoBehaviour
     {
         animator.SetFloat("Speed", agent.velocity.sqrMagnitude); //speedに合わせてモーションの速度を変更
         DistChanger(); //ユーザとエージェント間の距離を把握
-        //RotateBodyToMaster();
 
 
     }
 
+    private void DistChanger() // ユーザとエージェント間の距離によってdeistanceFarの値を変更
+    {
+        float dist = Vector3.Distance(agent.transform.position, master.transform.position);
+        if (dist > 2.5)
+        {
+            distanceFar.Value = true;
+
+        }
+        //else
+        if (dist < 2.0)
+        {
+            distanceFar.Value = false;
+        }
+    }
+
     public void AgentMoveWithMaster()　// desitanceFarの値によって、ユーザに近ければ進みユーザから離れれば止まるようになる
     {
-        /*
+        
         if(distanceFar.Value)
-            Debug.Log("true");
         {
+            Debug.Log("true");
             StopDestination();
         }
         else
@@ -54,32 +70,27 @@ public class TargetTracking : MonoBehaviour
             SetDestination();
             Debug.Log("false");
         }
-        */
-    }
-
-    private void DistChanger() // ユーザとエージェント間の距離によってdeistanceFarの値を変更
-    {
-        float dist = Vector3.Distance(agent.transform.position, master.transform.position);
-        if (dist > 1.5)
-        {
-            distanceFar.Value = true;
-        }
-        else
-        {
-            distanceFar.Value = false;
-        }
+        
     }
 
     public void SetDestination() //targetの位置へ移動
     {
-        var endPoint = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
-        agent.destination = endPoint;
+        if (LeadOn)
+        {
+            var endPoint = new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z);
+            agent.destination = endPoint;
+        }
+        ShowFace = false;
     }
 
     public void StopDestination() //その場で留まる
     {
-        var stopPoint = new Vector3(slave.transform.position.x, slave.transform.position.y, slave.transform.position.z);
-        agent.destination = stopPoint;
+        if (LeadOn)
+        {
+            var stopPoint = new Vector3(slave.transform.position.x, slave.transform.position.y, slave.transform.position.z);
+            agent.destination = stopPoint;
+            ShowFace = true;
+        }
     }
 
     public void WalkRandom() //masterの周りを1.5mの範囲内でランダムに移動
@@ -96,34 +107,42 @@ public class TargetTracking : MonoBehaviour
         }
     }
 
-    public void WalkFront()
+    public void WalkFront() // ユーザの前に移動
     {
         WalkFree = false;
         agent.destination = master.transform.position + master.transform.forward * 1.0f;
+        ShowFace = true;
     }
-
-    public void ShowFaceToMaster()
+    
+    
+    private void OnAnimatorIK(int layorIndex) // 体と顔をユーザへ向ける処理
     {
-        
+        if (ShowFace)
+        {
+            animator.SetLookAtWeight(1.0f, 0.8f, 0.2f, 0.8f, 0.4f);
+            animator.SetLookAtPosition(master.transform.position);
+            /*var rotation = new Vector3(master.transform.position.x, agent.transform.position.y, master.transform.position.z);
+            transform.rotation = Quaternion.LookRotation(rotation);
+            ShowFace = false;*/
+        }
     }
+    
 
-    private void OnAnimatorIK(int layorIndex)
-    {
-        //animator.SetLookAtWeight(1.0f, 0.8f, 1.0f, 0.0f, 0f);
-        //animator.SetLookAtPosition(master.transform.position);
-        //agent.destination = master.transform.position + master.transform.forward * 3.0f;
-    }
-
-    public void RotateBodyToMaster()
-    {
-        var rotation = new Vector3(master.transform.position.x, master.transform.position.y, master.transform.position.z);
-        transform.rotation = Quaternion.LookRotation(rotation);
-        Debug.Log("rotate");
-    }
-
-    public void GoFirst()
+    public void GoFirst() //キーワード「ありがとう」から初期状態へ戻る処理
     {
         WalkFree = true;
+        ShowFace = false;
+        LeadOn = false;
+    }
+
+    public void ShowFaceToMaster() // ユーザへ体と顔を向ける処理に使われる変数ShowFaceの処理
+    {
+        ShowFace = true;
+    }
+
+    public void GuideStart() // 関数SetDestinationに使われるLeadOnの処理
+    {
+        LeadOn = true;
     }
 }
 

@@ -20,6 +20,9 @@ ScriptsOnlyBuild:
     - UnityChan.SpringBone
     - UnityChan.SpringCollider
     - UnityChan.SpringManager
+    Microsoft.MixedReality.Toolkit.Editor.Inspectors.dll:
+    - Microsoft.MixedReality.Toolkit.Editor.MixedRealityCameraProfileInspector
+    - Microsoft.MixedReality.Toolkit.Editor.MixedRealityToolkitConfigurationProfileInspector
     Microsoft.MixedReality.Toolkit.Editor.Utilities.dll:
     - Microsoft.MixedReality.Toolkit.Utilities.Editor.ProjectPreferences
     Microsoft.MixedReality.Toolkit.Providers.ObjectMeshObserver.dll:

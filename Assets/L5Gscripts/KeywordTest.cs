@@ -10,8 +10,9 @@ public class KeywordTest : MonoBehaviour
     private TargetTracking tageTra;
     private string[][] keywords;
 
-    GameObject refObj = null;
-    GameObject refText = null;
+    public GameObject refObj;
+    public GameObject fukidashiObj;
+    public GameObject minimapObj;
     TargetTracking script;
     ChangeAgentText CAscript;
 
@@ -32,10 +33,10 @@ public class KeywordTest : MonoBehaviour
         keyCon.SetKeywords();//KeywordRecognizerにkeywordsを設定する
         keyCon.StartRecognizing(0); //シーン中で音声認識を始めたいときに呼び出す
 
-        refObj = GameObject.Find("SD_unitychan_humanoid");
-        refText = GameObject.Find("AgentText");
         script = refObj.GetComponent<TargetTracking>();
-        CAscript = refText.GetComponent<ChangeAgentText>();
+        CAscript = fukidashiObj.GetComponent<ChangeAgentText>();
+
+        
     }
 
     // Update is called once per frame
@@ -49,10 +50,10 @@ public class KeywordTest : MonoBehaviour
             keyCon.StartRecognizing(1);
             keyCon.StartRecognizing(2);
             keyCon.StartRecognizing(5);
-            script.WalkFront();
-            var message = "yes!";
-            CAscript.ChangeText(message);
 
+            script.WalkFront();
+            fukidashiObj.SetActive(true);
+            CAscript.ChangeText("はい!");
         }
         if (keyCon.hasRecognized[1])//map マップを表示
         {
@@ -60,7 +61,9 @@ public class KeywordTest : MonoBehaviour
             keyCon.hasRecognized[1] = false;
             keyCon.StopRecognizing(1);
             keyCon.StopRecognizing(2);
-            CAscript.ChangeText("map!");
+
+            minimapObj.SetActive(true);
+            fukidashiObj.SetActive(false);
 
         }
         if (keyCon.hasRecognized[2])//recommend おすすめを教える
@@ -70,7 +73,8 @@ public class KeywordTest : MonoBehaviour
             keyCon.StopRecognizing(1);
             keyCon.StopRecognizing(2);
             keyCon.StartRecognizing(3);
-            CAscript.ChangeText("bedroom");
+
+            CAscript.ChangeText("高汐先生の部屋かトイレかな");
         }
         if (keyCon.hasRecognized[3])//guide 案内する
         {
@@ -78,6 +82,9 @@ public class KeywordTest : MonoBehaviour
             keyCon.hasRecognized[3] = false;
             keyCon.StopRecognizing(3);
             keyCon.StartRecognizing(4);
+
+            script.GuideStart();
+            fukidashiObj.SetActive(false);
             script.SetDestination();
         }
         if (keyCon.hasRecognized[4])//explain 説明する
@@ -85,7 +92,11 @@ public class KeywordTest : MonoBehaviour
             Debug.Log("keyword[4] was recognized");
             keyCon.hasRecognized[4] = false;
             keyCon.StopRecognizing(4);
-            CAscript.ChangeText("Bedroom is Here");
+
+            fukidashiObj.SetActive(true);
+            CAscript.ChangeText("Kaz-san is Here");
+
+            script.ShowFaceToMaster();
         }
         if (keyCon.hasRecognized[5])//back 待機状態に戻る
         {
@@ -97,9 +108,10 @@ public class KeywordTest : MonoBehaviour
             keyCon.StopRecognizing(4);
             keyCon.StopRecognizing(5);
             keyCon.StartRecognizing(0);
-            CAscript.ChangeText("Welcome!");
+
+            minimapObj.SetActive(false);
+            fukidashiObj.SetActive(false);
             script.GoFirst();
-            script.RotateBodyToMaster();
         }
 
 
